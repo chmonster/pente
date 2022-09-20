@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useReducer } from 'react'
+import { rows, columns } from './Game'
 
 export function IsolationBoard({ ctx, G, moves }) {
-  const onClick = id => moves.clickCell(id)
+  const [, forceUpdate] = useReducer(x => x + 1, 0)
+
+  const onClick = id => {
+    moves.clickCell(id)
+    forceUpdate()
+  }
 
   let winner = ''
   if (ctx.gameover) {
@@ -31,8 +37,8 @@ export function IsolationBoard({ ctx, G, moves }) {
     cursor: 'notallowed',
   }
 
-  const columns = 6
-  const rows = 4
+  //const columns = 6
+  //const rows = 4
   const idxy = (x, y) => columns * y + x
 
   let tbody = []

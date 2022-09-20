@@ -1,5 +1,9 @@
 import { INVALID_MOVE } from 'boardgame.io/core'
 
+export const rows = 4
+export const columns = 6
+const lineLength = 3
+
 const cellVictory = (rows, columns, lineLength) => {
   let cellIndex = []
   const id = (x, y) => columns * y + x
@@ -29,7 +33,7 @@ const cellVictory = (rows, columns, lineLength) => {
 
 // Return true if `cells` is in a winning configuration.
 function IsVictory(cells) {
-  const positions = cellVictory(4, 6, 3)
+  const positions = cellVictory(rows, columns, lineLength)
   const isRowComplete = row => {
     const symbols = row.map(i => cells[i])
     return symbols.every(i => i !== null && i === symbols[0])
@@ -43,7 +47,7 @@ function IsDraw(cells) {
 }
 
 export const Isolation = {
-  setup: () => ({ cells: Array(24).fill(null) }),
+  setup: () => ({ cells: Array(rows * columns).fill(null) }),
 
   turn: {
     minMoves: 1,
