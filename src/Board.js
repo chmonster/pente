@@ -9,14 +9,21 @@ export function IsolationBoard({ ctx, G, moves }) {
     forceUpdate()
   }
 
-  let winner = ''
+  let banner = ''
   if (ctx.gameover) {
-    winner =
+    banner =
       ctx.gameover.winner !== undefined ? (
         <div id='winner'>Winner: {ctx.gameover.winner}</div>
       ) : (
         <div id='winner'>Draw!</div>
       )
+  } else {
+    banner = `
+    ${ctx.currentPlayer} to play
+    Captures: 
+    0: ${G.score['0']} 
+    1: ${G.score['1']}
+    `
   }
 
   const cellStyle = {
@@ -61,10 +68,11 @@ export function IsolationBoard({ ctx, G, moves }) {
 
   return (
     <div>
+      <header>{banner}</header>
+
       <table id='board'>
         <tbody>{tbody}</tbody>
       </table>
-      {winner}
     </div>
   )
 }
