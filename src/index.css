@@ -11,3 +11,31 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+ 
+.cell {
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 0;
+  cursor: crosshair;
+}
+
+.cell-done {
+  cursor: default;
+} 
+
+.cell0 {
+  background-color: lightblue;
+}
+
+.cell1 {
+  background-color: lightpink;
+}
+
+.jumbotron {
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  background-color: #c9cccf;
+  border-radius: .3rem;
+  text-align:center;
+} 
+

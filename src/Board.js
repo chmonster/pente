@@ -1,12 +1,43 @@
-import React, { useReducer } from 'react'
-import { rows, columns } from './Game'
+import React from 'react'
+import { rows, columns, idxy } from './Game'
+import { Row, Col, Container } from 'react-bootstrap'
+
+const cellSize = Math.floor(100 / columns)
+const cellSizeStyle = {
+  height: cellSize.toString().concat('vh'),
+  width: cellSize.toString().concat('vw'),
+  fontSize: (0.5 * cellSize).toString().concat('vw'),
+}
+
+const Cell = ({ cells, id, onClick, currentPlayer }) => {
+  const [isHovering, setHovering] = React.useState(false)
+
+  const cellx = cells[id]
+    ? ' cell'.concat(cells[id])
+    : ' cell'.concat(currentPlayer)
+
+  const cellClass =
+    'cell d-flex align-items-center justify-content-center'.concat(
+      cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
+    )
+
+  return (
+    <Col
+      style={cellSizeStyle}
+      key={id}
+      className={cellClass}
+      onClick={!cells[id] ? () => onClick(id) : null}
+      onMouseOver={() => setHovering(true)}
+      onMouseOut={() => setHovering(false)}
+    >
+      {cells[id] || ''}
+    </Col>
+  )
+}
 
 export function IsolationBoard({ ctx, G, moves }) {
-  const [, forceUpdate] = useReducer(x => x + 1, 0)
-
   const onClick = id => {
     moves.clickCell(id)
-    forceUpdate()
   }
 
   let banner = ''
@@ -26,53 +57,33 @@ export function IsolationBoard({ ctx, G, moves }) {
     `
   }
 
-  const cellStyle = {
-    border: '1px solid #555',
-    width: '50px',
-    height: '50px',
-    lineHeight: '50px',
-    textAlign: 'center',
-    cursor: 'crosshair',
-  }
+  const colIdx = [...Array(columns).keys()]
+  const rowIdx = [...Array(rows).keys()]
 
-  const cellStyleDone = {
-    border: '1px solid #555',
-    width: '50px',
-    height: '50px',
-    lineHeight: '50px',
-    textAlign: 'center',
-    cursor: 'notallowed',
-  }
-
-  //const columns = 6
-  //const rows = 4
-  const idxy = (x, y) => columns * y + x
-
-  let tbody = []
-  for (let y = 0; y < rows; y++) {
-    let cells = []
-    for (let x = 0; x < columns; x++) {
-      const id = idxy(x, y)
-      cells.push(
-        <td key={id}>
-          {G.cells[id] ? (
-            <div style={cellStyleDone}>{G.cells[id]}</div>
-          ) : (
-            <button style={cellStyle} onClick={() => onClick(id)} />
-          )}
-        </td>
-      )
-    }
-    tbody.push(<tr key={`row${y}`}>{cells}</tr>)
-  }
+  const tbody = (
+    <>
+      <Container fluid>
+        {rowIdx.map(y => (
+          <Row key={`r${y}`}>
+            {colIdx.map(x => (
+              <Cell
+                key={idxy(x, y)}
+                cells={G.cells}
+                id={idxy(x, y)}
+                currentPlayer={ctx.currentPlayer}
+                onClick={onClick}
+              />
+            ))}
+          </Row>
+        ))}
+      </Container>
+    </>
+  )
 
   return (
-    <div>
-      <header>{banner}</header>
-
-      <table id='board'>
-        <tbody>{tbody}</tbody>
-      </table>
-    </div>
+    <>
+      <header className='jumbotron'>{banner}</header>
+      {tbody}
+    </>
   )
 }

@@ -4,7 +4,7 @@ export const rows = 12
 export const columns = 12
 const lineLength = 5
 
-const idxy = (x, y) => columns * y + x
+export const idxy = (x, y) => columns * y + x
 const coords = id => [id % columns, Math.floor(id / columns)]
 
 const directions = [
