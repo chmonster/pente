@@ -3,10 +3,13 @@ import { INVALID_MOVE } from 'boardgame.io/core'
 export const rows = 10
 export const columns = 10
 const lineLength = 5
+const captureLength = 3
 
-const colIdx = [...Array(columns).keys()]
-const rowIdx = [...Array(rows).keys()]
+export const colIdx = [...Array(columns).keys()]
+export const rowIdx = [...Array(rows).keys()]
 const llIdx = [...Array(lineLength).keys()]
+const capIdx = [...Array(captureLength).keys()].map(i => i + 1)
+// console.log(capIdx)
 
 export const idxy = (x, y) => columns * y + x
 const coords = id => [id % columns, Math.floor(id / columns)]
@@ -21,38 +24,35 @@ const directions = [
   [1, 0],
   [1, 1],
 ]
-
 const addV = (a, b) => a.map((e, i) => e + b[i])
 const mulV = (c, a) => a.map(e => e * c)
 
 const relLoc = (id, c, dir) => idxy(...addV(coords(id), mulV(c, dir)))
 
+// const currentPlayer = ctx.currentPlayer
 const otherPlayer = ctx => ctx.playOrder.filter(a => a !== ctx.currentPlayer)[0]
 
 const capturePosition = (G, ctx, id, dir) => {
-  if (G.cells[relLoc(id, 3, dir)] === ctx.currentPlayer) {
-    if (
-      G.cells[relLoc(id, 2, dir)] === otherPlayer(ctx) &&
-      G.cells[relLoc(id, 1, dir)] === otherPlayer(ctx)
-    ) {
-      return true
-    }
-    return false
-  }
+  console.log(G.cells[relLoc(id, captureLength + 1, dir)])
+  return (
+    G.cells[relLoc(id, captureLength + 1, dir)] === ctx.currentPlayer &&
+    capIdx.every(i => G.cells[relLoc(id, i, dir)] === otherPlayer(ctx))
+  )
 }
 
 const checkCapture = (G, ctx, id) => {
-  let dir
-  for (let i = 0; i < directions.length; i++) {
-    dir = directions[i]
-    if (capturePosition(G, ctx, id, dir)) {
-      console.log('capture')
-      G.cells[relLoc(id, 2, dir)] = null
-      G.cells[relLoc(id, 1, dir)] = null
-      return true
-    }
-  }
-  return false
+  // let dir
+  return (
+    directions
+      .map(dir => {
+        if (capturePosition(G, ctx, id, dir)) {
+          console.log('capture')
+          capIdx.forEach(i => (G.cells[relLoc(id, i, dir)] = null))
+          return true
+        } else return false
+      })
+      .filter(x => x).length * captureLength
+  )
 }
 
 const cellVictory = () => {
@@ -100,9 +100,9 @@ const cellVictory = () => {
 }
 
 // Return true if `cells` is in a winning configuration.
-function IsVictory(cells) {
+function IsLineVictory(cells) {
   const positions = cellVictory()
-  console.log(positions)
+  // console.log(positions)
   const isRowComplete = row => {
     const symbols = row.map(i => cells[i])
     return symbols.every(i => i !== null && i === symbols[0])
@@ -136,15 +136,15 @@ export const Pente = {
       }
       G.cells[id] = ctx.currentPlayer
       //ninuki-renju capture move
-
-      if (checkCapture(G, ctx, id)) {
-        G.score[ctx.currentPlayer] = G.score[ctx.currentPlayer] + 2
+      const captures = checkCapture(G, ctx, id)
+      if (captures > 0) {
+        G.score[ctx.currentPlayer] = G.score[ctx.currentPlayer] + captures
       }
     },
   },
 
   endIf: (G, ctx) => {
-    if (IsVictory(G.cells) || G.score[ctx.currentPlayer] === 10) {
+    if (IsLineVictory(G.cells) || G.score[ctx.currentPlayer] === 10) {
       return { winner: ctx.currentPlayer }
     }
     if (IsDraw(G.cells)) {

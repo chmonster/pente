@@ -1,5 +1,5 @@
 import React from 'react'
-import { rows, columns, idxy } from './Game'
+import { rowIdx, colIdx, columns, idxy } from './Game'
 import { Row, Col, Container } from 'react-bootstrap'
 
 const cellSize = Math.floor(100 / columns)
@@ -56,9 +56,6 @@ export function PenteBoard({ ctx, G, moves }) {
     1: ${G.score['1']}
     `
   }
-
-  const colIdx = [...Array(columns).keys()]
-  const rowIdx = [...Array(rows).keys()]
 
   const tbody = (
     <>
