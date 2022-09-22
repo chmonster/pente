@@ -1,1 +1,1 @@
-[boardgame.io](https://boardgame.io) + React project, expanding the Tic-Tac-Toe example to an implementation of the game [Pente] (https://boardgamegeek.com/boardgame/1295/pente), which was in turn based on [Ninuki-Renju] (https://renju.se/rif/pente.htm).
+[boardgame.io](https://boardgame.io) project, using React and Bootstrap, expanding the Tic-Tac-Toe example to an implementation of the game [Pente](https://boardgamegeek.com/boardgame/1295/pente), which was in turn based on [Ninuki-Renju](https://renju.se/rif/pente.htm).
