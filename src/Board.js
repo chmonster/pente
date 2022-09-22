@@ -35,7 +35,7 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
   )
 }
 
-export function IsolationBoard({ ctx, G, moves }) {
+export function PenteBoard({ ctx, G, moves }) {
   const onClick = id => {
     moves.clickCell(id)
   }

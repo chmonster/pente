@@ -1,8 +1,12 @@
 import { INVALID_MOVE } from 'boardgame.io/core'
 
-export const rows = 12
-export const columns = 12
+export const rows = 10
+export const columns = 10
 const lineLength = 5
+
+const colIdx = [...Array(columns).keys()]
+const rowIdx = [...Array(rows).keys()]
+const llIdx = [...Array(lineLength).keys()]
 
 export const idxy = (x, y) => columns * y + x
 const coords = id => [id % columns, Math.floor(id / columns)]
@@ -51,40 +55,54 @@ const checkCapture = (G, ctx, id) => {
   return false
 }
 
-const cellVictory = (rows, columns, lineLength) => {
-  let cellIndex = []
-
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < columns; x++) {
-      let line = []
-      for (let i = 0; i < lineLength; i++) {
-        if (y + i < rows) line.push(idxy(x, y + i))
-      }
-      if (line.length === lineLength) cellIndex.push(line)
-      line = []
-      for (let i = 0; i < lineLength; i++) {
-        if (x + i < columns) line.push(idxy(x + i, y))
-      }
-      if (line.length === lineLength) cellIndex.push(line)
-      line = []
-      for (let i = 0; i < lineLength; i++) {
-        if (x + i < columns && y + i < rows) line.push(idxy(x + i, y + i))
-      }
-      if (line.length === lineLength) cellIndex.push(line)
-      line = []
-      for (let i = 0; i < lineLength; i++) {
-        if (x > 0 && y + i < rows) line.push(idxy(x - i, y + i))
-      }
-      if (line.length === lineLength) cellIndex.push(line)
-    }
-  }
-
-  return cellIndex
+const cellVictory = () => {
+  return rowIdx
+    .map(y => {
+      return colIdx.map(x => {
+        return [
+          //vertical
+          llIdx.reduce((a, i) => {
+            if (y + i < rows) {
+              return a.concat(idxy(x, y + i))
+            } else {
+              return a
+            }
+          }, []),
+          //horizontal
+          llIdx.reduce((a, i) => {
+            if (x + i < columns) {
+              return a.concat(idxy(x + i, y))
+            } else {
+              return a
+            }
+          }, []),
+          //backslash
+          llIdx.reduce((a, i) => {
+            if (x + i < columns && y + i < rows) {
+              return a.concat(idxy(x + i, y + i))
+            } else {
+              return a
+            }
+          }, []),
+          //forward slash
+          llIdx.reduce((a, i) => {
+            if (x - i > 0 && y + i < rows) {
+              return a.concat(idxy(x - i, y + i))
+            } else {
+              return a
+            }
+          }, []),
+        ]
+      })
+    })
+    .flat([2])
+    .filter(line => line.length === lineLength)
 }
 
 // Return true if `cells` is in a winning configuration.
 function IsVictory(cells) {
-  const positions = cellVictory(rows, columns, lineLength)
+  const positions = cellVictory()
+  console.log(positions)
   const isRowComplete = row => {
     const symbols = row.map(i => cells[i])
     return symbols.every(i => i !== null && i === symbols[0])
@@ -97,7 +115,7 @@ function IsDraw(cells) {
   return cells.filter(c => c === null).length === 0
 }
 
-export const Isolation = {
+export const Pente = {
   setup: () => ({
     cells: Array(rows * columns).fill(null),
     score: {

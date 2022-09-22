@@ -1,10 +1,10 @@
 import { Client } from 'boardgame.io/react'
-import { Isolation } from './Game'
-import { IsolationBoard } from './Board'
+import { Pente } from './Game'
+import { PenteBoard } from './Board'
 
 const App = Client({
-  game: Isolation,
-  board: IsolationBoard,
+  game: Pente,
+  board: PenteBoard,
 })
 
 export default App
