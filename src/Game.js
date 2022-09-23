@@ -1,39 +1,23 @@
 import { INVALID_MOVE } from 'boardgame.io/core'
+import {
+  rows,
+  columns,
+  lineLength,
+  captureLength,
+  colIdx,
+  rowIdx,
+  llIdx,
+  capIdx,
+  idxy,
+  directions,
+  relLoc,
+} from './helper'
 
-export const rows = 10
-export const columns = 10
-const lineLength = 5
-const captureLength = 3
-
-export const colIdx = [...Array(columns).keys()]
-export const rowIdx = [...Array(rows).keys()]
-const llIdx = [...Array(lineLength).keys()]
-const capIdx = [...Array(captureLength).keys()].map(i => i + 1)
-// console.log(capIdx)
-
-export const idxy = (x, y) => columns * y + x
-const coords = id => [id % columns, Math.floor(id / columns)]
-
-const directions = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
-]
-const addV = (a, b) => a.map((e, i) => e + b[i])
-const mulV = (c, a) => a.map(e => e * c)
-
-const relLoc = (id, c, dir) => idxy(...addV(coords(id), mulV(c, dir)))
-
-// const currentPlayer = ctx.currentPlayer
+//const currentPlayer = ctx.currentPlayer
 const otherPlayer = ctx => ctx.playOrder.filter(a => a !== ctx.currentPlayer)[0]
 
 const capturePosition = (G, ctx, id, dir) => {
-  console.log(G.cells[relLoc(id, captureLength + 1, dir)])
+  // console.log(G.cells[relLoc(id, captureLength + 1, dir)])
   return (
     G.cells[relLoc(id, captureLength + 1, dir)] === ctx.currentPlayer &&
     capIdx.every(i => G.cells[relLoc(id, i, dir)] === otherPlayer(ctx))
@@ -41,12 +25,11 @@ const capturePosition = (G, ctx, id, dir) => {
 }
 
 const checkCapture = (G, ctx, id) => {
-  // let dir
   return (
     directions
       .map(dir => {
         if (capturePosition(G, ctx, id, dir)) {
-          console.log('capture')
+          // console.log('capture')
           capIdx.forEach(i => (G.cells[relLoc(id, i, dir)] = null))
           return true
         } else return false

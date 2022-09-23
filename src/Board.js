@@ -1,12 +1,13 @@
 import React from 'react'
-import { rowIdx, colIdx, columns, idxy } from './Game'
+import { rowIdx, colIdx, rows, idxy } from './helper'
 import { Row, Col, Container } from 'react-bootstrap'
 
-const cellSize = Math.floor(100 / columns)
+const cellSize = (100 / rows + 1).toString().concat('vmin')
+const fontSize = (0.5 * (100 / rows + 1)).toString().concat('vmin')
 const cellSizeStyle = {
-  height: cellSize.toString().concat('vh'),
-  width: cellSize.toString().concat('vw'),
-  fontSize: (0.5 * cellSize).toString().concat('vw'),
+  height: cellSize,
+  width: cellSize,
+  fontSize: fontSize,
 }
 
 const Cell = ({ cells, id, onClick, currentPlayer }) => {
@@ -35,52 +36,71 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
   )
 }
 
+const Banner = ({ G, ctx }) => {
+  const showWinner = ctx.gameover && ctx.gameover.winner !== undefined
+  const showTie = ctx.gameover && ctx.gameover.winner === undefined
+  const showTurn = !ctx.gameover
+
+  return (
+    <>
+      <Container
+        fluid
+        as='header'
+        style={{ height: cellSize, position: 'fixed', fontSize: fontSize }}
+      >
+        {showWinner && (
+          <Row id='winner'>
+            <Col>Winner: {ctx.gameover.winner}</Col>
+          </Row>
+        )}
+        {showTie && (
+          <Row id='winner'>
+            <Col>Draw!</Col>
+          </Row>
+        )}
+        {showTurn && (
+          <Row id='report' className='align-items-center'>
+            <Col id='cap0' className='border'>
+              0: {G.score['0']} captures
+            </Col>
+            <Col id='toplay'>{ctx.currentPlayer} to play</Col>
+            <Col id='cap1'>1: {G.score['1']} captures</Col>
+          </Row>
+        )}
+      </Container>
+    </>
+  )
+}
+
+const GridCells = ({ onClick, G, ctx }) => (
+  <div id='board' style={{ position: 'absolute', top: cellSize }}>
+    <Container>
+      {rowIdx.map(y => (
+        <Row key={`r${y}`}>
+          {colIdx.map(x => (
+            <Cell
+              key={idxy(x, y)}
+              cells={G.cells}
+              id={idxy(x, y)}
+              currentPlayer={ctx.currentPlayer}
+              onClick={onClick}
+            />
+          ))}
+        </Row>
+      ))}
+    </Container>
+  </div>
+)
+
 export function PenteBoard({ ctx, G, moves }) {
   const onClick = id => {
     moves.clickCell(id)
   }
 
-  let banner = ''
-  if (ctx.gameover) {
-    banner =
-      ctx.gameover.winner !== undefined ? (
-        <div id='winner'>Winner: {ctx.gameover.winner}</div>
-      ) : (
-        <div id='winner'>Draw!</div>
-      )
-  } else {
-    banner = `
-    ${ctx.currentPlayer} to play
-    Captures: 
-    0: ${G.score['0']} 
-    1: ${G.score['1']}
-    `
-  }
-
-  const tbody = (
-    <>
-      <Container fluid>
-        {rowIdx.map(y => (
-          <Row key={`r${y}`}>
-            {colIdx.map(x => (
-              <Cell
-                key={idxy(x, y)}
-                cells={G.cells}
-                id={idxy(x, y)}
-                currentPlayer={ctx.currentPlayer}
-                onClick={onClick}
-              />
-            ))}
-          </Row>
-        ))}
-      </Container>
-    </>
-  )
-
   return (
     <>
-      <header className='jumbotron'>{banner}</header>
-      {tbody}
+      <Banner G={G} ctx={ctx} />
+      <GridCells onClick={onClick} G={G} ctx={ctx} />
     </>
   )
 }
