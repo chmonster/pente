@@ -15,7 +15,6 @@ code {
 .cell {
   border: 1px solid #555;
   border-radius: 5px;
-  padding: 0;
   cursor: crosshair;
 }
 
@@ -42,9 +41,6 @@ header {
   text-align: center;
 }
 
-/* #board {
-  position: relative;
-} */
 
 /* .css-fix {
   white-space: pre-wrap; 

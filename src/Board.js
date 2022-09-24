@@ -1,13 +1,19 @@
 import React from 'react'
-import { rowIdx, colIdx, rows, idxy } from './helper'
+import { rowIdx, colIdx, rows, columns, idxy, coords } from './helper'
 import { Row, Col, Container } from 'react-bootstrap'
 
-const cellSize = (100 / rows + 1).toString().concat('vmin')
+// const cellSize = (100 / rows + 1).toString().concat('vmin')
 const fontSize = (0.5 * (100 / rows + 1)).toString().concat('vmin')
-const cellSizeStyle = {
-  height: cellSize,
-  width: cellSize,
-  fontSize: fontSize,
+
+const cellStyle = id => {
+  const [x, y] = coords(id)
+  return {
+    // height: cellSize,
+    // width: cellSize,
+    'grid-column-start': x,
+    'grid-row-start': y,
+    fontSize: fontSize,
+  }
 }
 
 const Cell = ({ cells, id, onClick, currentPlayer }) => {
@@ -17,22 +23,21 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
     ? ' cell'.concat(cells[id])
     : ' cell'.concat(currentPlayer)
 
-  const cellClass =
-    'cell d-flex align-items-center justify-content-center'.concat(
-      cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
-    )
+  const cellClass = 'cell'.concat(
+    cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
+  )
 
   return (
-    <Col
-      style={cellSizeStyle}
+    <div
+      style={cellStyle(id)}
       key={id}
       className={cellClass}
       onClick={!cells[id] ? () => onClick(id) : null}
       onMouseOver={() => setHovering(true)}
       onMouseOut={() => setHovering(false)}
     >
-      {cells[id] || ''}
-    </Col>
+      {cells[id] || '?'}
+    </div>
   )
 }
 
@@ -46,7 +51,7 @@ const Banner = ({ G, ctx }) => {
       <Container
         fluid
         as='header'
-        style={{ height: cellSize, position: 'fixed', fontSize: fontSize }}
+        // style={{ height: cellSize, fontSize: fontSize }}
       >
         {showWinner && (
           <Row id='winner'>
@@ -59,10 +64,8 @@ const Banner = ({ G, ctx }) => {
           </Row>
         )}
         {showTurn && (
-          <Row id='report' className='align-items-center'>
-            <Col id='cap0' className='border'>
-              0: {G.score['0']} captures
-            </Col>
+          <Row id='report'>
+            <Col id='cap0'>0: {G.score['0']} captures</Col>
             <Col id='toplay'>{ctx.currentPlayer} to play</Col>
             <Col id='cap1'>1: {G.score['1']} captures</Col>
           </Row>
@@ -72,23 +75,28 @@ const Banner = ({ G, ctx }) => {
   )
 }
 
+const boardStyle = {
+  display: 'grid',
+  'column-gap': 0,
+  'grid-template-columns': 'repeat(' + columns + ', 1fr)',
+  'grid-template-rows': 'repeat(' + rows + ', 1fr)',
+}
+
 const GridCells = ({ onClick, G, ctx }) => (
-  <div id='board' style={{ position: 'absolute', top: cellSize }}>
-    <Container>
-      {rowIdx.map(y => (
-        <Row key={`r${y}`}>
-          {colIdx.map(x => (
-            <Cell
-              key={idxy(x, y)}
-              cells={G.cells}
-              id={idxy(x, y)}
-              currentPlayer={ctx.currentPlayer}
-              onClick={onClick}
-            />
-          ))}
-        </Row>
-      ))}
-    </Container>
+  <div id='board' style={boardStyle}>
+    {rowIdx.map(y => (
+      <div class='gridRow' key={`r${y}`}>
+        {colIdx.map(x => (
+          <Cell
+            key={idxy(x, y)}
+            cells={G.cells}
+            id={idxy(x, y)}
+            currentPlayer={ctx.currentPlayer}
+            onClick={onClick}
+          />
+        ))}
+      </div>
+    ))}
   </div>
 )
 
