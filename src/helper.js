@@ -1,16 +1,15 @@
-export const rows = 10
+export const rows = 7
 export const columns = 10
 export const lineLength = 5
 export const captureLength = 2
 
-export const colIdx = [...Array(columns).keys()]
-export const rowIdx = [...Array(rows).keys()]
+export const colIdx = [...Array(columns).keys()].map(i => i + 1)
+export const rowIdx = [...Array(rows).keys()].map(i => i + 1)
 export const llIdx = [...Array(lineLength).keys()]
 export const capIdx = [...Array(captureLength).keys()].map(i => i + 1)
-// console.log(capIdx)
 
-export const idxy = (x, y) => columns * y + x
-export const coords = id => [id % columns, Math.floor(id / columns)]
+export const idxy = (x, y) => columns * (y - 1) + x
+export const coords = id => [id % columns, Math.ceil(id / columns)]
 
 export const directions = [
   [-1, -1],

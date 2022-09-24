@@ -41,6 +41,9 @@ header {
   text-align: center;
 }
 
+#board {
+  justify-self: center;
+}
 
 /* .css-fix {
   white-space: pre-wrap; 

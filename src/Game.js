@@ -13,11 +13,9 @@ import {
   relLoc,
 } from './helper'
 
-//const currentPlayer = ctx.currentPlayer
 const otherPlayer = ctx => ctx.playOrder.filter(a => a !== ctx.currentPlayer)[0]
 
 const capturePosition = (G, ctx, id, dir) => {
-  // console.log(G.cells[relLoc(id, captureLength + 1, dir)])
   return (
     G.cells[relLoc(id, captureLength + 1, dir)] === ctx.currentPlayer &&
     capIdx.every(i => G.cells[relLoc(id, i, dir)] === otherPlayer(ctx))

@@ -2,45 +2,6 @@ import React from 'react'
 import { rowIdx, colIdx, rows, columns, idxy, coords } from './helper'
 import { Row, Col, Container } from 'react-bootstrap'
 
-// const cellSize = (100 / rows + 1).toString().concat('vmin')
-const fontSize = (0.5 * (100 / rows + 1)).toString().concat('vmin')
-
-const cellStyle = id => {
-  const [x, y] = coords(id)
-  return {
-    // height: cellSize,
-    // width: cellSize,
-    'grid-column-start': x,
-    'grid-row-start': y,
-    fontSize: fontSize,
-  }
-}
-
-const Cell = ({ cells, id, onClick, currentPlayer }) => {
-  const [isHovering, setHovering] = React.useState(false)
-
-  const cellx = cells[id]
-    ? ' cell'.concat(cells[id])
-    : ' cell'.concat(currentPlayer)
-
-  const cellClass = 'cell'.concat(
-    cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
-  )
-
-  return (
-    <div
-      style={cellStyle(id)}
-      key={id}
-      className={cellClass}
-      onClick={!cells[id] ? () => onClick(id) : null}
-      onMouseOver={() => setHovering(true)}
-      onMouseOut={() => setHovering(false)}
-    >
-      {cells[id] || '?'}
-    </div>
-  )
-}
-
 const Banner = ({ G, ctx }) => {
   const showWinner = ctx.gameover && ctx.gameover.winner !== undefined
   const showTie = ctx.gameover && ctx.gameover.winner === undefined
@@ -48,11 +9,7 @@ const Banner = ({ G, ctx }) => {
 
   return (
     <>
-      <Container
-        fluid
-        as='header'
-        // style={{ height: cellSize, fontSize: fontSize }}
-      >
+      <Container fluid as='header' style={{ height: cellSize(1) }}>
         {showWinner && (
           <Row id='winner'>
             <Col>Winner: {ctx.gameover.winner}</Col>
@@ -75,30 +32,71 @@ const Banner = ({ G, ctx }) => {
   )
 }
 
+const cellSize = a => (a * (100 / (rows + 1))).toString().concat('vmin')
+
 const boardStyle = {
+  width: cellSize(columns),
+  height: cellSize(rows),
+  justifySelf: 'center',
   display: 'grid',
-  'column-gap': 0,
-  'grid-template-columns': 'repeat(' + columns + ', 1fr)',
-  'grid-template-rows': 'repeat(' + rows + ', 1fr)',
+  columnGap: 0,
+  gridTemplateColumns: `repeat(${columns}, 1fr)`,
+  gridTemplateRows: `repeat(${rows}, 1fr)`,
 }
 
 const GridCells = ({ onClick, G, ctx }) => (
-  <div id='board' style={boardStyle}>
-    {rowIdx.map(y => (
-      <div class='gridRow' key={`r${y}`}>
-        {colIdx.map(x => (
-          <Cell
-            key={idxy(x, y)}
-            cells={G.cells}
-            id={idxy(x, y)}
-            currentPlayer={ctx.currentPlayer}
-            onClick={onClick}
-          />
-        ))}
-      </div>
-    ))}
-  </div>
+  <Container fluid id='board' style={boardStyle}>
+    {rowIdx.map(y => {
+      return colIdx.map(x => (
+        <Cell
+          key={idxy(x, y)}
+          cells={G.cells}
+          id={idxy(x, y)}
+          currentPlayer={ctx.currentPlayer}
+          onClick={onClick}
+        />
+      ))
+    })}
+  </Container>
 )
+
+const cellStyle = id => {
+  const [x, y] = coords(id)
+  return {
+    height: cellSize(1),
+    width: cellSize(1),
+    gridColumnStart: x,
+    gridRowStart: y,
+    fontSize: cellSize(0.5),
+    placeItems: 'center',
+  }
+}
+
+const Cell = ({ cells, id, onClick, currentPlayer }) => {
+  const [isHovering, setHovering] = React.useState(false)
+
+  const cellx = cells[id]
+    ? ' cell'.concat(cells[id])
+    : ' cell'.concat(currentPlayer)
+
+  const cellClass = 'cell'.concat(
+    cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
+  )
+
+  return (
+    <div
+      style={cellStyle(id)}
+      key={id}
+      id={id}
+      className={cellClass}
+      onClick={!cells[id] ? () => onClick(id) : null}
+      onMouseOver={() => setHovering(true)}
+      onMouseOut={() => setHovering(false)}
+    >
+      {cells[id] || id}
+    </div>
+  )
+}
 
 export function PenteBoard({ ctx, G, moves }) {
   const onClick = id => {
