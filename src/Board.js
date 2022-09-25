@@ -30,7 +30,7 @@ const Banner = ({ G, ctx }) => {
             className='header-text'
             style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
           >
-            <Col>
+            <Col id='outcome'>
               Winner: {ctx.gameover.winner === '0' ? whiteStone : blackStone}
             </Col>
           </Row>
@@ -41,7 +41,7 @@ const Banner = ({ G, ctx }) => {
             className='header-text'
             style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
           >
-            <Col className='winnerText'>Draw!</Col>
+            <Col id='outcome'>Draw!</Col>
           </Row>
         )}
         {showTurn && (

@@ -28,7 +28,6 @@ const checkCapture = (G, ctx, id) => {
     directions
       .map(dir => {
         if (capturePosition(G, ctx, id, dir)) {
-          // console.log('capture')
           capIdx.forEach(i => (G.cells[relLoc(id, i, dir)] = null))
           return true
         } else return false
@@ -132,5 +131,13 @@ export const Pente = {
     if (IsDraw(G.cells)) {
       return { draw: true }
     }
+  },
+
+  ai: {
+    enumerate: (G, ctx) => {
+      return G.cells.flatMap((cell, i) => {
+        return cell === null ? { move: 'clickCell', args: [i] } : []
+      })
+    },
   },
 }

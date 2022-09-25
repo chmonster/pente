@@ -1,7 +1,7 @@
-export const rows = 7
-export const columns = 10
-export const lineLength = 5
-export const captureLength = 2
+export const rows = 4
+export const columns = 4
+export const lineLength = 4
+export const captureLength = 0
 export const stoneVictory = 10
 
 export const colIdx = [...Array(columns).keys()].map(i => i + 1)

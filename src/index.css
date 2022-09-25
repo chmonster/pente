@@ -19,6 +19,10 @@ code {
   padding: 0;
 }
 
+#outcome {
+  cursor: crosshair;
+}
+
 .cell-available {
   cursor: crosshair;
 }
