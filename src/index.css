@@ -13,11 +13,13 @@ code {
 }
  
 .cell {
-  /* border: 0px solid #555; */
-  /* border-radius: 5px; */
   box-sizing: content-box;
   background-image: url('./images/empty.svg');
   border: 0;
+  padding: 0;
+}
+
+.cell-available {
   cursor: crosshair;
 }
 
@@ -26,20 +28,21 @@ code {
 } 
 
 .cell0 {
-  /* background-color: lightblue; */
   background-image: url('./images/0.svg');
 }
 
 .cell1 {
-  /* background-color: lightpink; */
   background-image: url('./images/1.svg')
 }
 
 header {
-  /* position: fixed; */
-  z-index: 2;
   background-color: #c9cccf;
-  border-radius: .3rem;
+  box-sizing: content-box;
+  align-content: center;
+}
+
+.header-text {
+  align-items: center;
 }
 
 #cap0, #cap1, #toplay, #winner {
@@ -51,16 +54,16 @@ header {
 }
 
 .border-left-edge {
-  border-left:6px solid black;
+  border-left:1vh solid black;
 }
 .border-bottom-edge {
-  border-bottom:6px solid black;
+  border-bottom:1vh solid black;
 }
 .border-right-edge {
-  border-right:6px solid black;
+  border-right:1vh solid black;
 }
 .border-top-edge {
-  border-top:6px solid black;
+  border-top:1vh solid black;
 }
 
 /* .css-fix {

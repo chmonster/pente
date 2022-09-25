@@ -14,6 +14,8 @@ const whiteStone = '\u25CB'
 const blackStone = '\u25CF'
 const dot = '\u00B7'
 
+const cellSize = a => (a * (100 / (rows + 2))).toString().concat('vmin')
+
 const Banner = ({ G, ctx }) => {
   const showWinner = ctx.gameover && ctx.gameover.winner !== undefined
   const showTie = ctx.gameover && ctx.gameover.winner === undefined
@@ -21,21 +23,33 @@ const Banner = ({ G, ctx }) => {
 
   return (
     <>
-      <Container fluid as='header' style={{ height: cellSize(1) }}>
+      <Container fluid as='header'>
         {showWinner && (
-          <Row id='winner'>
+          <Row
+            id='winner'
+            className='header-text'
+            style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
+          >
             <Col>
               Winner: {ctx.gameover.winner === '0' ? whiteStone : blackStone}
             </Col>
           </Row>
         )}
         {showTie && (
-          <Row id='winner'>
-            <Col>Draw!</Col>
+          <Row
+            id='winner'
+            className='header-text'
+            style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
+          >
+            <Col className='winnerText'>Draw!</Col>
           </Row>
         )}
         {showTurn && (
-          <Row id='report'>
+          <Row
+            id='report'
+            className='header-text'
+            style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
+          >
             <Col id='cap0'>
               {whiteStone}: {blackStone.repeat(G.score['0'])}
               {dot.repeat(stoneVictory - G.score['0'])}
@@ -55,20 +69,18 @@ const Banner = ({ G, ctx }) => {
   )
 }
 
-const cellSize = a => (a * (100 / (columns + 1))).toString().concat('vmin')
-
 const boardStyle = {
   width: cellSize(columns),
   height: cellSize(rows),
-  justifySelf: 'center',
   display: 'grid',
   columnGap: 0,
   gridTemplateColumns: `repeat(${columns}, 1fr)`,
   gridTemplateRows: `repeat(${rows}, 1fr)`,
+  padding: 0,
 }
 
 const GridCells = ({ onClick, G, ctx }) => (
-  <div id='board' style={boardStyle}>
+  <Container id='board' style={boardStyle}>
     {rowIdx.map(y => {
       return colIdx.map(x => (
         <Cell
@@ -76,11 +88,12 @@ const GridCells = ({ onClick, G, ctx }) => (
           cells={G.cells}
           id={idxy(x, y)}
           currentPlayer={ctx.currentPlayer}
+          gameover={ctx.gameover}
           onClick={onClick}
         />
       ))
     })}
-  </div>
+  </Container>
 )
 
 const cellStyle = id => {
@@ -95,22 +108,19 @@ const cellStyle = id => {
   }
 }
 
-const Cell = ({ cells, id, onClick, currentPlayer }) => {
+const Cell = ({ cells, id, onClick, currentPlayer, gameover }) => {
   const [isHovering, setHovering] = React.useState(false)
 
-  const cellx = cells[id]
-    ? 'cell'.concat(cells[id])
-    : 'cell'.concat(currentPlayer)
+  const cellx = cells[id] ? `cell${cells[id]}` : `cell${currentPlayer}`
 
   const cellHover = cells[id]
-    ? 'cell-done '.concat(cellx)
-    : isHovering
-    ? cellx
+    ? `cell-done ${cellx}`
+    : !gameover && isHovering
+    ? `cell-available ${cellx}`
     : ''
 
   const cellVertEdge = id => {
     const x = coords(id)[0]
-    console.log('column', x)
     switch (x) {
       case 1:
         return 'border-left-edge'
@@ -123,7 +133,6 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
 
   const cellHorzEdge = id => {
     const y = coords(id)[1]
-    console.log('row', y)
     switch (y) {
       case 1:
         return 'border-top-edge'
@@ -142,12 +151,10 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
       key={id}
       id={id}
       className={cellClass}
-      onClick={!cells[id] ? () => onClick(id) : null}
+      onClick={!gameover && !cells[id] ? () => onClick(id) : null}
       onMouseOver={() => setHovering(true)}
       onMouseOut={() => setHovering(false)}
-    >
-      {/* {cells[id] || `x${coords(id)[0]}y${coords(id)[1]}`} */}
-    </div>
+    ></div>
   )
 }
 
@@ -157,9 +164,9 @@ export function PenteBoard({ ctx, G, moves }) {
   }
 
   return (
-    <>
+    <div style={{ justifyItems: 'center' }}>
       <Banner G={G} ctx={ctx} />
       <GridCells onClick={onClick} G={G} ctx={ctx} />
-    </>
+    </div>
   )
 }
