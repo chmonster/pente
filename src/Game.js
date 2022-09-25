@@ -4,6 +4,7 @@ import {
   columns,
   lineLength,
   captureLength,
+  stoneVictory,
   colIdx,
   rowIdx,
   llIdx,
@@ -43,7 +44,7 @@ const cellVictory = () => {
         return [
           //vertical
           llIdx.reduce((a, i) => {
-            if (y + i < rows) {
+            if (y + i <= rows) {
               return a.concat(idxy(x, y + i))
             } else {
               return a
@@ -51,7 +52,7 @@ const cellVictory = () => {
           }, []),
           //horizontal
           llIdx.reduce((a, i) => {
-            if (x + i < columns) {
+            if (x + i <= columns) {
               return a.concat(idxy(x + i, y))
             } else {
               return a
@@ -59,7 +60,7 @@ const cellVictory = () => {
           }, []),
           //backslash
           llIdx.reduce((a, i) => {
-            if (x + i < columns && y + i < rows) {
+            if (x + i <= columns && y + i <= rows) {
               return a.concat(idxy(x + i, y + i))
             } else {
               return a
@@ -67,7 +68,7 @@ const cellVictory = () => {
           }, []),
           //forward slash
           llIdx.reduce((a, i) => {
-            if (x - i > 0 && y + i < rows) {
+            if (x - i >= 0 && y + i <= rows) {
               return a.concat(idxy(x - i, y + i))
             } else {
               return a
@@ -125,7 +126,7 @@ export const Pente = {
   },
 
   endIf: (G, ctx) => {
-    if (IsLineVictory(G.cells) || G.score[ctx.currentPlayer] === 10) {
+    if (IsLineVictory(G.cells) || G.score[ctx.currentPlayer] === stoneVictory) {
       return { winner: ctx.currentPlayer }
     }
     if (IsDraw(G.cells)) {

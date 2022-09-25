@@ -1,6 +1,18 @@
 import React from 'react'
-import { rowIdx, colIdx, rows, columns, idxy, coords } from './helper'
+import {
+  rowIdx,
+  colIdx,
+  rows,
+  columns,
+  idxy,
+  coords,
+  stoneVictory,
+} from './helper'
 import { Row, Col, Container } from 'react-bootstrap'
+
+const whiteStone = '\u25CB'
+const blackStone = '\u25CF'
+const dot = '\u00B7'
 
 const Banner = ({ G, ctx }) => {
   const showWinner = ctx.gameover && ctx.gameover.winner !== undefined
@@ -12,7 +24,9 @@ const Banner = ({ G, ctx }) => {
       <Container fluid as='header' style={{ height: cellSize(1) }}>
         {showWinner && (
           <Row id='winner'>
-            <Col>Winner: {ctx.gameover.winner}</Col>
+            <Col>
+              Winner: {ctx.gameover.winner === '0' ? whiteStone : blackStone}
+            </Col>
           </Row>
         )}
         {showTie && (
@@ -22,9 +36,18 @@ const Banner = ({ G, ctx }) => {
         )}
         {showTurn && (
           <Row id='report'>
-            <Col id='cap0'>0: {G.score['0']} captures</Col>
-            <Col id='toplay'>{ctx.currentPlayer} to play</Col>
-            <Col id='cap1'>1: {G.score['1']} captures</Col>
+            <Col id='cap0'>
+              {whiteStone}: {blackStone.repeat(G.score['0'])}
+              {dot.repeat(stoneVictory - G.score['0'])}
+              {dot.repeat()}
+            </Col>
+            <Col id='toplay'>
+              {ctx.currentPlayer === '1' ? blackStone : whiteStone} to play
+            </Col>
+            <Col id='cap1'>
+              {blackStone}: {whiteStone.repeat(G.score['1'])}
+              {dot.repeat(stoneVictory - G.score['1'])}
+            </Col>
           </Row>
         )}
       </Container>
@@ -32,7 +55,7 @@ const Banner = ({ G, ctx }) => {
   )
 }
 
-const cellSize = a => (a * (100 / (rows + 1))).toString().concat('vmin')
+const cellSize = a => (a * (100 / (columns + 1))).toString().concat('vmin')
 
 const boardStyle = {
   width: cellSize(columns),
@@ -45,7 +68,7 @@ const boardStyle = {
 }
 
 const GridCells = ({ onClick, G, ctx }) => (
-  <Container fluid id='board' style={boardStyle}>
+  <div id='board' style={boardStyle}>
     {rowIdx.map(y => {
       return colIdx.map(x => (
         <Cell
@@ -57,7 +80,7 @@ const GridCells = ({ onClick, G, ctx }) => (
         />
       ))
     })}
-  </Container>
+  </div>
 )
 
 const cellStyle = id => {
@@ -76,12 +99,42 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
   const [isHovering, setHovering] = React.useState(false)
 
   const cellx = cells[id]
-    ? ' cell'.concat(cells[id])
-    : ' cell'.concat(currentPlayer)
+    ? 'cell'.concat(cells[id])
+    : 'cell'.concat(currentPlayer)
 
-  const cellClass = 'cell'.concat(
-    cells[id] ? ' cell-done'.concat(cellx) : isHovering ? cellx : ''
-  )
+  const cellHover = cells[id]
+    ? 'cell-done '.concat(cellx)
+    : isHovering
+    ? cellx
+    : ''
+
+  const cellVertEdge = id => {
+    const x = coords(id)[0]
+    console.log('column', x)
+    switch (x) {
+      case 1:
+        return 'border-left-edge'
+      case columns:
+        return 'border-right-edge'
+      default:
+        return ''
+    }
+  }
+
+  const cellHorzEdge = id => {
+    const y = coords(id)[1]
+    console.log('row', y)
+    switch (y) {
+      case 1:
+        return 'border-top-edge'
+      case rows:
+        return 'border-bottom-edge'
+      default:
+        return ''
+    }
+  }
+
+  const cellClass = `cell ${cellHover} ${cellVertEdge(id)} ${cellHorzEdge(id)}`
 
   return (
     <div
@@ -93,7 +146,7 @@ const Cell = ({ cells, id, onClick, currentPlayer }) => {
       onMouseOver={() => setHovering(true)}
       onMouseOut={() => setHovering(false)}
     >
-      {cells[id] || id}
+      {/* {cells[id] || `x${coords(id)[0]}y${coords(id)[1]}`} */}
     </div>
   )
 }
