@@ -12,7 +12,7 @@ import {
   idxy,
   directions,
   relLoc,
-} from './helper'
+} from './constants'
 
 const otherPlayer = ctx => ctx.playOrder.filter(a => a !== ctx.currentPlayer)[0]
 
