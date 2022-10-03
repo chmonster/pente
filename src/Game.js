@@ -97,6 +97,11 @@ function IsDraw(cells) {
 }
 
 export const Pente = {
+  name: 'pente',
+
+  minPlayers: 1,
+  maxPlayers: 2,
+
   setup: () => ({
     cells: Array(rows * columns).fill(null),
     score: {

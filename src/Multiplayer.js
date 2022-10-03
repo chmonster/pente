@@ -19,7 +19,7 @@ const PenteClient = Client({
   debug: true,
   numPlayers: 2,
   multiplayer: SocketIO({
-    server: `${window.location.protocol}//${window.location.hostname}:8000`,
+    server: `localhost:8000`,
   }),
 })
 
@@ -36,9 +36,9 @@ const Multiplayer = () => {
     )
   }
   return (
-    <section className='drawWrapper'>
-      <h1 className='title'>Pente</h1>
-      <div className='gameContainer'>
+    <section>
+      <h1>Pente</h1>
+      <div>
         <PenteClient gameID={gameid} playerID={playerid} />
       </div>
     </section>
@@ -46,3 +46,12 @@ const Multiplayer = () => {
 }
 
 export default Multiplayer
+
+/* 
+//resign 
+
+await lobbyClient.leaveMatch('tic-tac-toe', 'matchID', {
+  playerID: '0',
+  credentials: 'playerCredentials',
+});
+*/

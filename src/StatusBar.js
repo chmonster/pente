@@ -12,6 +12,12 @@ const StatusBar = ({ G, ctx }) => {
   const showTie = ctx.gameover && ctx.gameover.winner === undefined
   const showTurn = !ctx.gameover
 
+  //add rematch prompt
+  // const { nextMatchID } = await lobbyClient.playAgain('tic-tac-toe', 'matchID', {
+  //   playerID: '0',
+  //   credentials: 'playerCredentials',
+  // })
+
   return (
     <>
       <Container fluid as='header'>
