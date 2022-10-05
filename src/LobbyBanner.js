@@ -1,7 +1,7 @@
 // import { Pente } from './Game'
 // import PenteBoard from './PenteBoard'
-import { LobbyClient } from 'boardgame.io/client'
-import { useEffect, useState, useMemo } from 'react'
+import lobbyService from './services/lobby'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const LobbyBanner = () => {
@@ -9,44 +9,31 @@ const LobbyBanner = () => {
   // const [cred, setCred] = useState(null)
   const navigate = useNavigate()
 
-  const lobbyClient = useMemo(
-    () => new LobbyClient({ server: 'http://localhost:8000' }),
-    []
-  )
-
   useEffect(() => {
-    const fetchMatches = async () => {
-      const games = await lobbyClient.listGames()
-      const fetchedMatches = await lobbyClient.listMatches(games[0])
-      if (fetchedMatches) {
-        setMatches(fetchedMatches.matches.map(match => match.matchID))
-      }
-    }
-    fetchMatches()
-    if (matches) {
-      console.log('useEffect matches', matches)
-    }
-  }, [matches, lobbyClient])
+    const getMatches = async () => await lobbyService.listMatches()
+    getMatches().then(response =>
+      setMatches(response.matches.map(match => match.matchID))
+    )
+  }, [])
 
   const handleJoinSelect = async event => {
     event.preventDefault()
     let playerName = ''
+    let playerID = ''
     let matchID = null
     if (event.target.value === 'newGame') {
-      const matchToJoin = await lobbyClient.createMatch('pente', {
-        numPlayers: 2,
-      })
+      const matchToJoin = await lobbyService.createMatch()
       setMatches([...matches, matchToJoin.matchID])
       matchID = matchToJoin.matchID
       playerName = 'first'
+      playerID = '0'
     } else if (event.target.value && event.target.value !== 'default') {
       matchID = event.target.value
       playerName = 'second'
+      playerID = '1'
     }
 
-    const cred = await lobbyClient.joinMatch('pente', matchID, {
-      playerName: playerName,
-    })
+    const cred = await lobbyService.joinMatch(matchID, playerName, playerID)
 
     console.log('cred', cred, 'matches', matches, 'matchID', matchID)
     if (matchID) {
