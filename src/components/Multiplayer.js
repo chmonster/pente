@@ -16,13 +16,14 @@ const PenteClient = Client({
 })
 
 const Multiplayer = () => {
-  const playerid = useParams().playerid
-  const gameid = useParams().gameid
+  const playerID = useParams().playerID || null
+  const gameID = useParams().gameID || null
+  console.log('multiplayer', gameID, playerID)
 
   return (
     <section>
       <div>
-        <PenteClient gameID={gameid | null} playerID={playerid | null} />
+        <PenteClient gameID={gameID} playerID={playerID} />
       </div>
     </section>
   )

@@ -10,8 +10,11 @@ const listMatches = async () => {
 
 const getMatch = async matchID => await lobbyClient.getMatch(game, matchID)
 
-const createMatch = async () =>
-  await lobbyClient.createMatch(game, { numPlayers: 2 })
+const createMatch = async () => {
+  return await lobbyClient
+    .createMatch(game, { numPlayers: 2 })
+    .then(response => lobbyClient.getMatch(game, response.matchID))
+}
 
 const joinMatch = async (matchID, playerName, playerID) => {
   return await lobbyClient.joinMatch(game, matchID, {
