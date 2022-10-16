@@ -1,7 +1,14 @@
 import React from 'react'
 import StatusBar from './StatusBar'
 import Cell from './Cell'
-import { rowIdx, colIdx, rows, columns, idxy, cellSize } from './constants'
+import {
+  rowIdx,
+  colIdx,
+  rows,
+  columns,
+  idxy,
+  cellSize,
+} from '../game/constants'
 
 const boardStyle = {
   width: cellSize(columns),

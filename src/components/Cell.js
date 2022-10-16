@@ -1,4 +1,4 @@
-import { coords, cellSize, columns, rows } from './constants'
+import { coords, cellSize, columns, rows } from '../game/constants'
 import React from 'react'
 
 const cellStyle = id => {

@@ -1,12 +1,9 @@
-// import { Pente } from './Game'
-// import PenteBoard from './PenteBoard'
-import lobbyService from './services/lobby'
+import lobbyService from '../services/lobby'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const LobbyBanner = () => {
+const Lobby = () => {
   const [matches, setMatches] = useState(null)
-  // const [cred, setCred] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -61,37 +58,4 @@ const LobbyBanner = () => {
   )
 }
 
-export default LobbyBanner
-
-/*
-//choose player display name
-await lobbyClient.updatePlayer('tic-tac-toe', 'matchID', {
-  playerID: '0',
-  credentials: 'playerCredentials',
-  newName: 'Al',
-});
-
-//create match (players)
-const { matchID } = await lobbyClient.createMatch('tic-tac-toe', {
-  numPlayers: 2
-});
-
-//choose match (dropdown)
-const { matches } = await lobbyClient.listMatches('tic-tac-toe');
-
-//join match
-const { playerCredentials } = await lobbyClient.joinMatch(
-  'tic-tac-toe',
-  'matchID',
-  {
-    playerID: '0',
-    playerName: 'Alice',
-  }
-);
-
-
-//exit match
-
-
-//exit lobby
-*/
+export default Lobby

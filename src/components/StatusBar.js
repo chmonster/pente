@@ -4,8 +4,9 @@ import {
   blackStone,
   dot,
   cellSize,
-} from './constants'
+} from '../game/constants'
 import { Row, Col, Container } from 'react-bootstrap'
+// import lobbyService from '../services/lobby'
 
 const StatusBar = ({ G, ctx }) => {
   const showWinner = ctx.gameover && ctx.gameover.winner !== undefined
@@ -13,10 +14,7 @@ const StatusBar = ({ G, ctx }) => {
   const showTurn = !ctx.gameover
 
   //add rematch prompt
-  // const { nextMatchID } = await lobbyClient.playAgain('tic-tac-toe', 'matchID', {
-  //   playerID: '0',
-  //   credentials: 'playerCredentials',
-  // })
+  // const { nextMatchID } = lobbyService.playAgain(ctx.matchID)
 
   return (
     <>
