@@ -4,6 +4,7 @@ import { Client } from 'boardgame.io/react'
 import { Pente } from '../game/Game'
 import PenteBoard from './PenteBoard'
 import { SocketIO } from 'boardgame.io/multiplayer'
+// import lobbyClient from '../services/lobby'
 
 const PenteClient = Client({
   game: Pente,
@@ -17,13 +18,16 @@ const PenteClient = Client({
 
 const Multiplayer = () => {
   const playerID = useParams().playerID || null
-  const gameID = useParams().gameID || null
-  console.log('multiplayer', gameID, playerID)
+  const matchID = useParams().matchID || null
+  console.log('multiplayer', matchID, playerID)
+
+  // const fetchMatch = async () => await lobbyClient.getMatchByID(matchID)
+  // const match = fetchMatch()
 
   return (
     <section>
       <div>
-        <PenteClient gameID={gameID} playerID={playerID} />
+        <PenteClient matchID={matchID} playerID={playerID} debug={false} />
       </div>
     </section>
   )

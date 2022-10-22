@@ -13,6 +13,9 @@ const StatusBar = ({ G, ctx }) => {
   const showTie = ctx.gameover && ctx.gameover.winner === undefined
   const showTurn = !ctx.gameover
 
+  const player0 = whiteStone
+  const player1 = blackStone
+
   //add rematch prompt
   // const { nextMatchID } = lobbyService.playAgain(ctx.matchID)
 
@@ -26,7 +29,7 @@ const StatusBar = ({ G, ctx }) => {
             style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
           >
             <Col id='outcome'>
-              Winner: {ctx.gameover.winner === '0' ? whiteStone : blackStone}
+              Winner: {ctx.gameover.winner === '0' ? player0 : player1}
             </Col>
           </Row>
         )}
@@ -46,7 +49,7 @@ const StatusBar = ({ G, ctx }) => {
             style={{ height: cellSize(1), fontSize: cellSize(0.5) }}
           >
             <Col id='cap0'>
-              {whiteStone}: {blackStone.repeat(G.score['0'])}
+              {player0}: {blackStone.repeat(G.score['0'])}
               {dot.repeat(stoneVictory - G.score['0'])}
               {dot.repeat()}
             </Col>
@@ -54,7 +57,7 @@ const StatusBar = ({ G, ctx }) => {
               {ctx.currentPlayer === '1' ? blackStone : whiteStone} to play
             </Col>
             <Col id='cap1'>
-              {blackStone}: {whiteStone.repeat(G.score['1'])}
+              {player1}: {whiteStone.repeat(G.score['1'])}
               {dot.repeat(stoneVictory - G.score['1'])}
             </Col>
           </Row>

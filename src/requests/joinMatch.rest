@@ -1,6 +1,6 @@
-POST http://localhost:8000/games/pente/3daMZxOdE8R/join
+POST http://localhost:8000/games/pente/SyYTA5IW8hH/join
 content-type: application/json
 
 {
-  "playerName": "Wilbur"
+  "playerName": "George"
 }
