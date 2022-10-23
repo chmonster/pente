@@ -1,12 +1,14 @@
 import lobbyService from '../services/lobby'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 
-const Lobby = ({ currentMatchID }) => {
+const Lobby = () => {
   const [matches, setMatches] = useState(null)
   const [playerName, setPlayerName] = useState('')
-  const [selection, setSelection] = useState('')
+  const [selection, setSelection] = useState('default')
+  // const [credentials, setCredentials] = useState({})
   const navigate = useNavigate()
+  const { matchID } = useParams()
 
   useEffect(() => {
     const getMatches = async () => await lobbyService.listMatches()
@@ -22,30 +24,34 @@ const Lobby = ({ currentMatchID }) => {
   }
 
   const handleJoinSelect = async () => {
-    const [matchID, playerID] =
-      selection !== 'default' ? selection.split('+') : ['', '']
+    //get match and player ID from option value
+    if (selection !== 'default') {
+      const [matchID, playerID] =
+        selection !== 'default' ? selection.split('+') : ['', '']
 
-    console.log('handleJoinSelect', matchID, playerID, playerName)
+      // console.log('handleJoinSelect', matchID, playerID, playerName)
 
-    if (playerID !== 'S') {
-      await lobbyService
-        .joinMatch(matchID, playerName || 'default', playerID)
-        .then(newCred => {
-          sessionStorage.setItem(
-            matchID,
-            JSON.stringify({
-              credentials: newCred.playerCredentials,
-              playerID: newCred.playerID,
-              playerName: playerName || 'default',
+      if (playerID !== 'S') {
+        //not viewing as spectator
+        if (!sessionStorage.getItem(matchID)) {
+          await lobbyService
+            .joinMatch(matchID, playerName || 'default', playerID)
+            //store credential data
+            .then(newCred => {
+              sessionStorage.setItem(
+                matchID,
+                JSON.stringify({
+                  credentials: newCred.playerCredentials,
+                  id: newCred.playerID,
+                  name: playerName || 'default',
+                })
+              )
             })
-          )
-        })
-        .then(() => {
-          navigate(`/${matchID}/${playerID}`)
-        })
-    } else if (playerID === 'S') {
-      console.log('spectate', matchID)
-      navigate(`/${matchID}`)
+        }
+        navigate(`/${matchID}/${playerID}`)
+      } else if (playerID === 'S') {
+        navigate(`/${matchID}`)
+      }
     }
     setSelection('default')
     setPlayerName('')
@@ -57,82 +63,96 @@ const Lobby = ({ currentMatchID }) => {
       return null
     }
 
-    const playersIn = match.players.filter(player => player.name)
-    // console.log('playersIn', playersIn)
+    // //fetch credentials for this match and this session, if they exist
+    const sessionMatch =
+      JSON.parse(sessionStorage.getItem(match.matchID)) || null
+    //will have credential, id, name stored for this match
 
-    const rejoin = JSON.parse(sessionStorage.getItem(match.matchID)) || null
+    const isInAs = idx =>
+      sessionMatch &&
+      match.players[idx].id.toString() === sessionMatch.id &&
+      match.players[idx].name.toString() === sessionMatch.name
 
-    switch (playersIn.length) {
-      case 0: //give two options to start game as either
-        return (
-          <>
-            <option
-              value={match.matchID.concat('+0')}
-              key={match.matchID.concat('+0')}
-            >
-              {`${match.matchID} as 0 (play first)`}
-            </option>
-            <option
-              value={match.matchID.concat('+1')}
-              key={match.matchID.concat('+1')}
-            >
-              {`${match.matchID} as 1 (play second)`}
-            </option>
-          </>
-        )
-      case 1: //offer the unoccupied spot or rejoin and wait
-        const unoccupiedID = playersIn[0].id === 0 ? '1' : '0'
-        return (
-          <>
-            <option
-              value={match.matchID.concat('+').concat(unoccupiedID)}
-              key={match.matchID.concat('+').concat(unoccupiedID)}
-            >
-              {`${match.matchID} join as ${unoccupiedID} vs ${playersIn[0].name}`}
-            </option>
-            {rejoin && (
-              <option
-                value={match.matchID.concat('+').concat(rejoin.playerID)}
-                key={match.matchID.concat('+').concat(rejoin.playerID)}
-              >
-                {`${match.matchID} rejoin as ${rejoin.playerID}`}
-              </option>
-            )}
-          </>
-        )
-      case 2:
-        const opponent = rejoin
-          ? playersIn.filter(player => player.id !== rejoin.playerID)
-          : null
+    const isEmpty = match.players.filter(player => player.name).length === 0
+    const oneSpotOpen = match.players.filter(player => player.name).length === 1
+    const isFull = match.players.filter(player => player.name).length === 2
 
+    if (isEmpty) {
+      //offer both spots
+      return (
+        <>
+          <option
+            value={match.matchID.concat('+0')}
+            key={match.matchID.concat('+0')}
+          >
+            {`${match.matchID} join as 0 (play first)`}
+          </option>
+          <option
+            value={match.matchID.concat('+1')}
+            key={match.matchID.concat('+1')}
+          >
+            {`${match.matchID} join as 1 (play second)`}
+          </option>
+        </>
+      )
+    }
+
+    if (oneSpotOpen) {
+      const filledSpot = match.players[0].name ? 0 : 1
+      const emptySpot = match.players[0].name ? 1 : 0
+
+      if (isInAs(filledSpot)) {
         return (
-          <>
-            {!rejoin && (
-              <option
-                value={match.matchID.concat('+S')}
-                key={match.matchID.concat('+S')}
-              >
-                {`${match.matchID} spectate (${playersIn[0].name} vs ${playersIn[1].name})`}
-              </option>
-            )}
-            {rejoin && (
-              <option
-                value={match.matchID.concat('+').concat(rejoin.playerID)}
-                key={match.matchID.concat('+').concat(rejoin.playerID)}
-              >
-                {`${match.matchID} rejoin as ${rejoin.playerID} vs ${opponent[0].name}`}
-              </option>
-            )}
-          </>
+          <option
+            value={match.matchID.concat('+').concat(sessionMatch.id)}
+            key={match.matchID.concat('+').concat(sessionMatch.id)}
+          >
+            {`${match.matchID} rejoin as ${sessionMatch.id}`}
+          </option>
         )
-      default:
-        console.log('match not processed')
-        return null
+      }
+      return (
+        <option
+          value={match.matchID.concat('+').concat(emptySpot.toString())}
+          key={match.matchID.concat('+').concat(emptySpot.toString())}
+        >
+          {`${match.matchID} join as ${emptySpot} vs ${match.players[filledSpot].name}`}
+        </option>
+      )
+    }
+
+    if (isFull) {
+      const spectator = !isInAs(0) && !isInAs(1)
+      if (spectator) {
+        return (
+          <option
+            value={match.matchID.concat('+S')}
+            key={match.matchID.concat('+S')}
+          >
+            {`${match.matchID} spectate (${match.players[0].name} vs ${match.players[1].name})`}
+          </option>
+        )
+      }
+      return match.players.map((player, idx) => {
+        if (!isInAs(idx)) {
+          return (
+            <option
+              value={match.matchID.concat('+').concat(sessionMatch.id)}
+              key={match.matchID.concat('+').concat(sessionMatch.id)}
+            >
+              {`${match.matchID} rejoin as ${sessionMatch.id} vs ${player.name}`}
+            </option>
+          )
+        } else {
+          return null
+        }
+      })
     }
   }
 
   return (
     <>
+      <Link to='/'>Home</Link>
       <button key='newMatch' onClick={handleNewMatch}>
         Start a new match
       </button>
@@ -159,7 +179,7 @@ const Lobby = ({ currentMatchID }) => {
         </option>
         {matches &&
           matches.map(match =>
-            match.id !== currentMatchID ? matchOption(match) : null
+            match.matchID !== matchID ? matchOption(match) : null
           )}
       </select>
       <button key='join' onClick={handleJoinSelect}>
