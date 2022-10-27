@@ -55,11 +55,13 @@ const joinMatch = async (matchID, playerName, playerID) => {
 //   "playerCredentials": "IxYq-A9Gs1PvSIPeh98EK"
 // }
 
-const playAgain = async (matchID, playerID, playerCredentials) => {
-  return await lobbyClient.playAgain(game, matchID, {
-    playerID,
-    credentials: playerCredentials,
-  })
+const playAgain = async (matchID, playerID, credentials) => {
+  return await lobbyClient
+    .playAgain(game, matchID, {
+      playerID,
+      credentials,
+    })
+    .then(response => getMatchByID(response.nextMatchID))
 }
 //returns:
 

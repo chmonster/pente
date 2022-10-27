@@ -1,7 +1,7 @@
-GET http://localhost:8000/games/pente/PS0znYZFqID/playAgain
+POST http://localhost:8000/games/pente/qiwHM8tDxUf/playAgain
 content-type: application/json
 
 {
   "playerID": "0",
-  "playerCredentials": "S3F8Bo9NJqrjzeNIHY-ei"
+  "playerCredentials": "bDjJrhTW2UIDXaMG3JSu8"
 }

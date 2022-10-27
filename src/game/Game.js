@@ -13,6 +13,7 @@ import {
   directions,
   relLoc,
 } from './constants'
+import { PluginPlayer } from 'boardgame.io/plugins'
 
 const otherPlayer = ctx => ctx.playOrder.filter(a => a !== ctx.currentPlayer)[0]
 
@@ -96,11 +97,27 @@ function IsDraw(cells) {
   return cells.filter(c => c === null).length === 0
 }
 
+// define a function to initialize each player’s state
+const playerSetup = playerID => ({ duh: 0 })
+
+// filter data returned to each client to hide secret state (OPTIONAL)
+const playerView = (players, playerID) => ({
+  // [playerID]: players[playerID],
+})
+
 export const Pente = {
   name: 'pente',
 
   minPlayers: 1,
   maxPlayers: 2,
+
+  plugins: [
+    // pass your function to the player plugin
+    PluginPlayer({
+      setup: playerSetup,
+      playerView: playerView,
+    }),
+  ],
 
   setup: () => ({
     cells: Array(rows * columns).fill(null),

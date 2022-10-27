@@ -55,6 +55,8 @@ header {
 
 #board {
   justify-self: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .border-left-edge {
@@ -69,6 +71,11 @@ header {
 .border-top-edge {
   border-top:1vh solid black;
 }
+
+/* #grid-cells {
+  margin-left: auto;
+  margin-right: auto;
+} */
 
 /* .css-fix {
   white-space: pre-wrap; 

@@ -45,9 +45,7 @@ const PenteBoard = ({ ctx, G, moves }) => {
   return (
     <>
       <StatusBar G={G} ctx={ctx} />
-      <div style={{ justifyItems: 'center' }}>
-        <GridCells onClick={onClick} G={G} ctx={ctx} />
-      </div>
+      <GridCells onClick={onClick} G={G} ctx={ctx} />
     </>
   )
 }

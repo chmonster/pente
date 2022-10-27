@@ -26,18 +26,26 @@ const Lobby = () => {
   const handleJoinSelect = async () => {
     //get match and player ID from option value
     if (selection !== 'default') {
-      const [matchID, playerID] =
-        selection !== 'default' ? selection.split('+') : ['', '']
+      const [matchID, playerID] = selection.split('+')
 
-      // console.log('handleJoinSelect', matchID, playerID, playerName)
-
-      if (playerID !== 'S') {
+      if (playerID === 'S') {
+        navigate(`/${matchID}`)
+      } else if (playerID === 'R') {
+        if (sessionStorage.getItem(matchID)) {
+          const credentials =
+            JSON.parse(sessionStorage.getItem(matchID)).credentials || null
+          const prevPlayerID =
+            JSON.parse(sessionStorage.getItem(matchID)).id || null
+          await lobbyService.playAgain(matchID, prevPlayerID, credentials)
+        }
+      } else if (playerID !== 'S') {
         //not viewing as spectator
         if (!sessionStorage.getItem(matchID)) {
           await lobbyService
             .joinMatch(matchID, playerName || 'default', playerID)
             //store credential data
             .then(newCred => {
+              console.log('newCred', newCred)
               sessionStorage.setItem(
                 matchID,
                 JSON.stringify({
@@ -49,8 +57,6 @@ const Lobby = () => {
             })
         }
         navigate(`/${matchID}/${playerID}`)
-      } else if (playerID === 'S') {
-        navigate(`/${matchID}`)
       }
     }
     setSelection('default')
@@ -66,7 +72,6 @@ const Lobby = () => {
     // //fetch credentials for this match and this session, if they exist
     const sessionMatch =
       JSON.parse(sessionStorage.getItem(match.matchID)) || null
-    //will have credential, id, name stored for this match
 
     const isInAs = idx =>
       sessionMatch &&
@@ -133,6 +138,25 @@ const Lobby = () => {
           </option>
         )
       }
+
+      if (match.gameover) {
+        return match.players.map((player, idx) => {
+          if (!isInAs(idx)) {
+            return (
+              <option
+                value={match.matchID.concat('+').concat('R')}
+                key={match.matchID.concat('+').concat('R')}
+              >
+                {`${match.matchID} create rematch vs ${player.name}`}
+              </option>
+            )
+          } else {
+            return null
+          }
+        })
+      }
+
+      //offer to rejoin game
       return match.players.map((player, idx) => {
         if (!isInAs(idx)) {
           return (

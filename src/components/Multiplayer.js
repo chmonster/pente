@@ -9,7 +9,7 @@ import { SocketIO } from 'boardgame.io/multiplayer'
 const PenteClient = Client({
   game: Pente,
   board: PenteBoard,
-  debug: true,
+  // debug: false,
   numPlayers: 2,
   multiplayer: SocketIO({
     server: `localhost:8000`,
@@ -19,16 +19,20 @@ const PenteClient = Client({
 const Multiplayer = () => {
   const playerID = useParams().playerID || null
   const matchID = useParams().matchID || null
-  console.log('multiplayer', matchID, playerID)
+  const sessionMatch = JSON.parse(sessionStorage.getItem(matchID))
+  const credentials = sessionMatch ? sessionMatch.credentials : null
+  console.log('multiplayer', matchID, playerID, credentials)
 
   // const fetchMatch = async () => await lobbyClient.getMatchByID(matchID)
   // const match = fetchMatch()
 
   return (
     <section>
-      <div>
-        <PenteClient matchID={matchID} playerID={playerID} debug={false} />
-      </div>
+      <PenteClient
+        matchID={matchID}
+        playerID={playerID}
+        credentials={credentials}
+      />
     </section>
   )
 }
