@@ -13,15 +13,23 @@ const cellStyle = id => {
   }
 }
 
-const Cell = ({ cells, id, onClick, currentPlayer, viewingPlayer, gameover }) => {
+const Cell = ({
+  cells,
+  id,
+  onClick,
+  currentPlayer,
+  viewingPlayer,
+  gameover,
+}) => {
   const [isHovering, setHovering] = useState(false)
 
   const cellx = cells[id] ? `cell${cells[id]}` : `cell${currentPlayer}`
-  const playerIsActive = currentPlayer === viewingPlayer
+  const playerIsActive =
+    !gameover && viewingPlayer && currentPlayer === viewingPlayer
 
   const cellHover = cells[id]
     ? `cell-done ${cellx}`
-    : !gameover && playerIsActive && isHovering
+    : playerIsActive && isHovering
     ? `cell-available ${cellx}`
     : ''
 
