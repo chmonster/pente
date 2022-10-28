@@ -138,6 +138,7 @@ export const Pente = {
         return INVALID_MOVE
       }
       G.cells[id] = ctx.currentPlayer
+      
       //ninuki-renju capture move
       const captures = checkCapture(G, ctx, id)
       if (captures > 0) {

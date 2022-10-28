@@ -9,6 +9,7 @@ import {
   idxy,
   cellSize,
 } from '../game/constants'
+import { useParams } from 'react-router-dom'
 
 const boardStyle = {
   width: cellSize(columns),
@@ -20,22 +21,27 @@ const boardStyle = {
   padding: 0,
 }
 
-const GridCells = ({ onClick, G, ctx }) => (
-  <div id='board' style={boardStyle}>
-    {rowIdx.map(y => {
-      return colIdx.map(x => (
-        <Cell
-          key={idxy(x, y)}
-          cells={G.cells}
-          id={idxy(x, y)}
-          currentPlayer={ctx.currentPlayer}
-          gameover={ctx.gameover}
-          onClick={onClick}
-        />
-      ))
-    })}
-  </div>
-)
+const GridCells = ({ onClick, G, ctx }) => {
+  const { playerID } = useParams()
+  console.log('GridCells', playerID)
+  return (
+    <div id='board' style={boardStyle}>
+      {rowIdx.map(y => {
+        return colIdx.map(x => (
+          <Cell
+            key={idxy(x, y)}
+            cells={G.cells}
+            id={idxy(x, y)}
+            currentPlayer={ctx.currentPlayer}
+            viewingPlayer={playerID}
+            gameover={ctx.gameover}
+            onClick={onClick}
+          />
+        ))
+      })}
+    </div>
+  )
+}
 
 const PenteBoard = ({ ctx, G, moves }) => {
   const onClick = id => {

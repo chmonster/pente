@@ -1,5 +1,5 @@
 import { coords, cellSize, columns, rows } from '../game/constants'
-import React from 'react'
+import { useState } from 'react'
 
 const cellStyle = id => {
   const [x, y] = coords(id)
@@ -13,14 +13,15 @@ const cellStyle = id => {
   }
 }
 
-const Cell = ({ cells, id, onClick, currentPlayer, gameover }) => {
-  const [isHovering, setHovering] = React.useState(false)
+const Cell = ({ cells, id, onClick, currentPlayer, viewingPlayer, gameover }) => {
+  const [isHovering, setHovering] = useState(false)
 
   const cellx = cells[id] ? `cell${cells[id]}` : `cell${currentPlayer}`
+  const playerIsActive = currentPlayer === viewingPlayer
 
   const cellHover = cells[id]
     ? `cell-done ${cellx}`
-    : !gameover && isHovering
+    : !gameover && playerIsActive && isHovering
     ? `cell-available ${cellx}`
     : ''
 

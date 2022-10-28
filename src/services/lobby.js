@@ -21,7 +21,7 @@ const getMatchByID = async matchID => await lobbyClient.getMatch(game, matchID)
 //   ],
 //   "createdAt": 1666100124797,
 //   "updatedAt": 1666100124797,
-//   "matchID": "PS0znYZFqID"
+//   "matchID": "10charStr."
 // }
 
 const listMatches = async () => {
@@ -52,7 +52,7 @@ const joinMatch = async (matchID, playerName, playerID) => {
 //returns:
 // {
 //   "playerID": "0",
-//   "playerCredentials": "IxYq-A9Gs1PvSIPeh98EK"
+//   "playerCredentials": "credentialGibberish"
 // }
 
 const playAgain = async (matchID, playerID, credentials) => {
