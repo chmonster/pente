@@ -7,6 +7,8 @@ export const stoneVictory = 10
 export const whiteStone = '\u25CB'
 export const blackStone = '\u25CF'
 export const dot = '\u00B7'
+export const stone = text =>
+  text === '0' ? whiteStone : text === '1' ? blackStone : dot
 
 export const colIdx = [...Array(columns).keys()].map(i => i + 1)
 export const rowIdx = [...Array(rows).keys()].map(i => i + 1)

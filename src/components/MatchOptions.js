@@ -1,8 +1,40 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { stone } from '../game/constants'
 
 const MatchOptions = ({ matches, handler }) => {
   const [selection, setSelection] = useState('default')
+  const [buttonText, setButtonText] = useState('Select an option')
+
+  const handleOptionChange = e => {
+    // console.log(
+    //   'handleOptionChange',
+    //   e.target.value.charAt(e.target.value.length - 1)
+    // )
+    e.preventDefault()
+    setSelection(e.target.value)
+    switch (e.target.value.charAt(e.target.value.length - 1)) {
+      case '0':
+        setButtonText('Go to this match')
+        break
+      case '1':
+        setButtonText('Go to this match')
+        break
+      case 'h': //newMatch
+        setButtonText('Create new match')
+        break
+      case 'S':
+        setButtonText('Watch this match')
+        break
+      case 'R':
+        setButtonText('Start the rematch')
+        break
+      default:
+        setButtonText('Select an option')
+        break
+    }
+  }
+
   const { matchID } = useParams()
 
   const matchOption = match => {
@@ -12,6 +44,10 @@ const MatchOptions = ({ matches, handler }) => {
     }
 
     // //fetch credentials for this match and this session, if they exist
+
+    const encodeMatchID = (match, code) =>
+      match.matchID.concat('+').concat(code)
+
     const sessionMatch =
       JSON.parse(sessionStorage.getItem(match.matchID)) || null
 
@@ -28,17 +64,11 @@ const MatchOptions = ({ matches, handler }) => {
       //offer both spots
       return (
         <>
-          <option
-            value={match.matchID.concat('+0')}
-            key={match.matchID.concat('+0')}
-          >
-            {`${match.matchID} join as 0 (play first)`}
+          <option value={encodeMatchID(match, 0)} key={encodeMatchID(match, 0)}>
+            {`${match.matchID} join as ${stone('0')} (play first)`}
           </option>
-          <option
-            value={match.matchID.concat('+1')}
-            key={match.matchID.concat('+1')}
-          >
-            {`${match.matchID} join as 1 (play second)`}
+          <option value={encodeMatchID(match, 1)} key={encodeMatchID(match, 1)}>
+            {`${match.matchID} join as ${stone('1')} (play second)`}
           </option>
         </>
       )
@@ -51,19 +81,21 @@ const MatchOptions = ({ matches, handler }) => {
       if (isInAs(filledSpot)) {
         return (
           <option
-            value={match.matchID.concat('+').concat(sessionMatch.id)}
-            key={match.matchID.concat('+').concat(sessionMatch.id)}
+            value={encodeMatchID(match, sessionMatch.id)}
+            key={encodeMatchID(match, sessionMatch.id)}
           >
-            {`${match.matchID} rejoin as ${sessionMatch.id}`}
+            {`${match.matchID} rejoin as ${stone(sessionMatch.id)}`}
           </option>
         )
       }
       return (
         <option
-          value={match.matchID.concat('+').concat(emptySpot.toString())}
-          key={match.matchID.concat('+').concat(emptySpot.toString())}
+          value={encodeMatchID(match, emptySpot.toString())}
+          key={encodeMatchID(match, emptySpot.toString())}
         >
-          {`${match.matchID} join as ${emptySpot} vs ${match.players[filledSpot].name}`}
+          {`${match.matchID} join as ${stone(emptySpot)} vs ${
+            match.players[filledSpot].name
+          }`}
         </option>
       )
     }
@@ -73,8 +105,8 @@ const MatchOptions = ({ matches, handler }) => {
       if (spectator) {
         return (
           <option
-            value={match.matchID.concat('+S')}
-            key={match.matchID.concat('+S')}
+            value={encodeMatchID(match, 'S')}
+            key={encodeMatchID(match, 'S')}
           >
             {`${match.matchID} spectate (${match.players[0].name} vs ${match.players[1].name})`}
           </option>
@@ -86,8 +118,8 @@ const MatchOptions = ({ matches, handler }) => {
           if (!isInAs(idx)) {
             return (
               <option
-                value={match.matchID.concat('+').concat('R')}
-                key={match.matchID.concat('+').concat('R')}
+                value={encodeMatchID(match, 'R')}
+                key={encodeMatchID(match, 'R')}
               >
                 {`${match.matchID} create rematch vs ${player.name}`}
               </option>
@@ -103,10 +135,12 @@ const MatchOptions = ({ matches, handler }) => {
         if (!isInAs(idx)) {
           return (
             <option
-              value={match.matchID.concat('+').concat(sessionMatch.id)}
-              key={match.matchID.concat('+').concat(sessionMatch.id)}
+              value={encodeMatchID(match, sessionMatch.id)}
+              key={encodeMatchID(match, sessionMatch.id)}
             >
-              {`${match.matchID} rejoin as ${sessionMatch.id} vs ${player.name}`}
+              {`${match.matchID} rejoin as ${stone(sessionMatch.id)} vs ${
+                player.name
+              }`}
             </option>
           )
         } else {
@@ -118,14 +152,15 @@ const MatchOptions = ({ matches, handler }) => {
 
   return (
     <>
-      <select value={selection} onChange={e => setSelection(e.target.value)}>
+      <select value={selection} onChange={handleOptionChange}>
         <option value='default'>Select a match</option>
+        <option value='newMatch'>New match</option>
         {matches &&
           matches.flatMap(match =>
             match.matchID !== matchID ? matchOption(match) : null
           )}
       </select>
-      <button onClick={() => handler(selection)}>Go</button>
+      <button onClick={() => handler(selection)}>{buttonText}</button>
     </>
   )
 }

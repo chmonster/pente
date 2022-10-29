@@ -16,42 +16,46 @@ const Lobby = () => {
 
   const decodeMatchOption = async option => {
     if (option !== 'default') {
-      const [matchID, playerID] = option.split('+')
-      if (playerID === 'S') {
-        navigate(`/${matchID}`)
-      } else if (playerID === 'R') {
-        if (sessionStorage.getItem(matchID)) {
-          const credentials =
-            JSON.parse(sessionStorage.getItem(matchID)).credentials || null
-          const prevPlayerID =
-            JSON.parse(sessionStorage.getItem(matchID)).id || null
-          await lobbyService.playAgain(matchID, prevPlayerID, credentials)
+      if (option === 'newMatch') {
+        handleNewMatch()
+      } else {
+        const [matchID, playerID] = option.split('+')
+        if (playerID === 'S') {
+          navigate(`/${matchID}`)
+        } else if (playerID === 'R') {
+          if (sessionStorage.getItem(matchID)) {
+            const credentials =
+              JSON.parse(sessionStorage.getItem(matchID)).credentials || null
+            const prevPlayerID =
+              JSON.parse(sessionStorage.getItem(matchID)).id || null
+            await lobbyService.playAgain(matchID, prevPlayerID, credentials)
+          }
+        } else {
+          //not viewing as spectator
+          if (!sessionStorage.getItem(matchID)) {
+            await lobbyService
+              .joinMatch(matchID, playerName || 'default', playerID)
+              //store credential data
+              .then(newCred => {
+                console.log('newCred', newCred)
+                sessionStorage.setItem(
+                  matchID,
+                  JSON.stringify({
+                    credentials: newCred.playerCredentials,
+                    id: newCred.playerID,
+                    name: playerName || 'default',
+                  })
+                )
+              })
+          }
+          navigate(`/${matchID}/${playerID}`)
         }
-      } else if (playerID !== 'S') {
-        //not viewing as spectator
-        if (!sessionStorage.getItem(matchID)) {
-          await lobbyService
-            .joinMatch(matchID, playerName || 'default', playerID)
-            //store credential data
-            .then(newCred => {
-              console.log('newCred', newCred)
-              sessionStorage.setItem(
-                matchID,
-                JSON.stringify({
-                  credentials: newCred.playerCredentials,
-                  id: newCred.playerID,
-                  name: playerName || 'default',
-                })
-              )
-            })
-        }
-        navigate(`/${matchID}/${playerID}`)
       }
     }
   }
 
-  const handleNewMatch = async event => {
-    event.preventDefault()
+  const handleNewMatch = async () => {
+    // event.preventDefault()
     await lobbyService.createMatch().then(response => {
       setMatches([...matches, response])
     })
@@ -60,14 +64,10 @@ const Lobby = () => {
   return (
     <>
       <Link to='/'>Home</Link>
-      <button key='newMatch' onClick={handleNewMatch}>
-        Start a new match
-      </button>
       <label htmlFor='player' key='playerLabel'>
         Player Name:
       </label>
       <input type='text' onInput={e => setPlayerName(e.target.value)} />
-      <label>Match ID:</label>
       <MatchOptions matches={matches} handler={decodeMatchOption} />
     </>
   )
